@@ -1,4 +1,5 @@
 useDynLib(miscF)
 
-export(curve.polynomial.rjmcmc, mvn.bayes, mvn.ub, rMultinom, spatial.lme.mcmc, uvnm.rjmcmc)
+export(curve.polynomial.rjmcmc, mvn.bayes, mvn.ub, mvt.ecme, mvt.mcmc,
+       rMultinom, spatial.lme.mcmc, uvnm.rjmcmc)
 

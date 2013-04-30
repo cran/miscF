@@ -19,7 +19,7 @@
 \value{
   \item{Mu.save}{a matrix of mean vector of the model, one row per iteration.}
   \item{Sigma.save}{a three dimensional array of variance of the model.
-	Sigma[,,i] is the result from the ith iteration.}
+	Sigma.save[,,i] is the result from the ith iteration.}
 }
 \details{
   Both the Jeffreys prior and normal-inverse-Wishart conjugate prior
