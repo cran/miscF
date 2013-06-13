@@ -1,5 +1,12 @@
+2013-5-16 
+	* src: add mvtmcmc.cpp to conduct mcmc of mvt. 
+	       Add Markevars and Makevars.win.
+	* R/mvt.mcmc: change according to mvtmcmc.cpp.
+	* DESCRIPTION: Add Rcpp and RcppArmadillo to 'Depends' and 'LinkingTo'. 
+	               Change to version 0.1-2.
+	
 2013-3-04 
-	* add mvt.ecme and mvt.mcmc
-	* DESCRIPTION: change to version 0.1-1
+	* add mvt.ecme and mvt.mcmc.
+	* DESCRIPTION: change to version 0.1-1.
 
 	

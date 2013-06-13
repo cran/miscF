@@ -54,7 +54,7 @@
   Sigma <- matrix(c(sigma12, rho12*sqrt(sigma12*sigma22),
                     rho12*sqrt(sigma12*sigma22), sigma22),
                   nrow=2)
-  k <- 5
+  k <- 8
   N <- 100
   X <- rmvt(N, sigma=Sigma, df=k, delta=c(mu1, mu2))
 
