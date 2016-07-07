@@ -1,3 +1,7 @@
+2016-7
+	* R: add rmvsn.R, rmvst.R, mvsn.mcmc.R, mvst.mcmc.R
+	* man: add rmvsn.Rd, rmvst.Rd, mvsn.mcmc.Rd, mvst.mcmc.Rd
+	* DESCRIPTION: Change to version 0.1-3
 2013-5-16 
 	* src: add mvtmcmc.cpp to conduct mcmc of mvt. 
 	       Add Markevars and Makevars.win.

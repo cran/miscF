@@ -12,7 +12,7 @@ mvt.mcmc <- function(X, niter, prior.lower.v, prior.upper.v,
         
     if(!is.matrix(X) || ncol(X) < 2 || nrow(X) < 3){
         stop("The input observations of the 'mvt.mcmc' has to be a matrix
-             of more than three rows and one column.")
+             of more than two rows and one column.")
     }
     if(prior.lower.v<0 || prior.upper.v<0 || prior.lower.v>prior.upper.v){
         stop("The bounds of the degrees of freedom of mvt have to be
