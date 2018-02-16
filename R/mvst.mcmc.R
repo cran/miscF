@@ -152,20 +152,20 @@ mvst.mcmc <- function(Y, prior.Mu0=NULL, prior.Sigma0=NULL,
     }",
         file="mvst_BUGS.txt")
 
-    modelCheck("mvst_BUGS.txt")
-    modelData(bugsData( datalist ))
-    modelCompile(numChains=1)
-    modelSetRN(seed)
-    modelInits(bugsInits( initlist, numChains=1 ))
-    modelGenInits()    # to generate a starting value for the missing x
-    samplesSetThin(nthin)
-    modelUpdate(nburn)
-    dicSet()
-    on.exit(dicClear(), add = TRUE)
-    samplesSet(parametersToSave)
-    modelUpdate(nmcmc-nburn)
+    BRugs::modelCheck("mvst_BUGS.txt")
+    BRugs::modelData(BRugs::bugsData( datalist ))
+    BRugs::modelCompile(numChains=1)
+    BRugs::modelSetRN(seed)
+    BRugs::modelInits(BRugs::bugsInits( initlist, numChains=1 ))
+    BRugs::modelGenInits()    # to generate a starting value for the missing x
+    BRugs::samplesSetThin(nthin)
+    BRugs::modelUpdate(nburn)
+    BRugs::dicSet()
+    on.exit(BRugs::dicClear(), add = TRUE)
+    BRugs::samplesSet(parametersToSave)
+    BRugs::modelUpdate(nmcmc-nburn)
 
-    bugsfit <- buildMCMC("*")
+    bugsfit <- BRugs::buildMCMC("*")
     unlink("mvst_BUGS.txt")
 	     
     Mu <-  do.call(cbind, lapply(1:P, function(i) bugsfit[,paste0("Mu[", i, "]")][[1]]))
@@ -177,7 +177,7 @@ mvst.mcmc <- function(Y, prior.Mu0=NULL, prior.Sigma0=NULL,
         }
     }	  
     nu <- bugsfit[,'nu'][[1]]
-    DIC <- dicStats()
+    DIC <- BRugs::dicStats()
 
     list(Mu=Mu, Delta=Delta, Sigma=Sigma, nu=nu, DIC=DIC[4,3])
     

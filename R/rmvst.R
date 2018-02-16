@@ -18,7 +18,8 @@ rmvst <- function(n, D, Mu, Sigma, nu){
     Y <- matrix(0, n, p)  
 
     for(i in 1:n){
-        z <- rtnorm(p, 0, 1, left=0)
+        u <- runif(p, 1/2, 1)
+        z <- qnorm(u, 0, 1)
         w <- rgamma(1, nu/2, nu/2)
         Y[i,] <- mvrnorm(1, Mu+D%*%z, Sigma/w)
     }

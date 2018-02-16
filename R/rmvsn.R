@@ -16,7 +16,9 @@ rmvsn <- function(n, D, Mu, Sigma){
 
     p <- nrow(D)
     Y <- matrix(0, n, p)  
-    Z <- matrix(rtnorm(n*p, 0, 1, left=0), n, p)
+    u <- runif(n*p, 1/2, 1)
+    z <- qnorm(u, 0, 1)
+    Z <- matrix(z, n, p)
 
     for(i in 1:n){
         Y[i,] <- mvrnorm(1, Mu+D%*%Z[i,], Sigma)

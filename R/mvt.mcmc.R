@@ -1,14 +1,9 @@
-mvtmcmc <- function(niter, lambda, Sigma.inv, Sigma0.inv, X, prior.Mu0,
-                      prior.p, V.inv, v, prior.lower.v, prior.upper.v){
-    .Call("mvtmcmc", niter, lambda, Sigma.inv, Sigma0.inv, X, prior.Mu0,
-                      prior.p, V.inv, v, prior.lower.v, prior.upper.v)
-}
-
-mvt.mcmc <- function(X, niter, prior.lower.v, prior.upper.v,
+mvt.mcmc <- function(X, prior.lower.v, prior.upper.v,
                      prior.Mu0=rep(0, ncol(X)),
                      prior.Sigma0=diag(10000, ncol(X)),
                      prior.p=ncol(X), prior.V=diag(1, ncol(X)),
-                     initial.v=NULL, initial.Sigma=NULL){
+                     initial.v=NULL, initial.Sigma=NULL,
+                     nmcmc=10000, nburn=nmcmc/10, nthin=1, seed=1){
         
     if(!is.matrix(X) || ncol(X) < 2 || nrow(X) < 3){
         stop("The input observations of the 'mvt.mcmc' has to be a matrix
@@ -55,9 +50,7 @@ mvt.mcmc <- function(X, niter, prior.lower.v, prior.upper.v,
     n <- nrow(X)            
     d <- ncol(X)             
     
-    Sigma0.inv <- solve(prior.Sigma0)
-    V.inv <- solve(prior.V)
-    
+     
     #assign initial values obtained from ecme
     if(is.null(initial.v) || is.null(initial.Sigma)){
         ecme <- mvt.ecme(X, prior.lower.v, prior.upper.v)
@@ -73,17 +66,44 @@ mvt.mcmc <- function(X, niter, prior.lower.v, prior.upper.v,
     lambda <- rgamma(n, v/2, v/2)
     Sigma.inv <- solve(Sigma)
     
-    #assign matrice for saving results
-    Mu.save <- matrix(0, niter, d)
-    Sigma.save <- array(0, dim=c(d,d,niter))
-    v.save <- rep(0, niter)
+    datalist <- list(Y=X, n=n, k=d, 
+                     Mu0=prior.Mu0, Tau0=solve(prior.Sigma0), H0=prior.V, p0=prior.p,
+                     ndf1=prior.lower.v, ndf2=prior.upper.v)
+    initlist <- list(list(nu=initial.v, Tau=solve(initial.Sigma)))
+    parametersToSave <- c("Mu", "Sigma", "nu")
+    
+    cpath <- getwd()
+    setwd(cpath)
+    cat(
+      "model {
+            for( i in 1 : n ) {
+                Y[i,1:k] ~ dmt(Mu[], Tau[,], nu)
+            }
+            Mu[1:k] ~ dmnorm(Mu0[], Tau0[,])
+            Tau[1:k,1:k] ~ dwish(H0[,], p0)
+            Sigma[1:k,1:k] <- inverse(Tau[,])
+            nu ~ dunif(ndf1, ndf2)
 
-    result <- mvtmcmc(niter, lambda, Sigma.inv, Sigma0.inv, X, prior.Mu0,
-                      prior.p, V.inv, v, prior.lower.v, prior.upper.v)
-    Mu.save <- matrix(result$Mu.save, nrow=niter, byrow=TRUE) 
-    Sigma.save <- array(result$Sigma.save, dim=c(d, d, niter))
-    v.save <- result$v
+       }",
+        file="mvt_BUGS.txt")
 
-    list(Mu.save=Mu.save, Sigma.save=Sigma.save, v.save=v.save)
+    
+    
+    bugsfit <- BRugs::BRugsFit(modelFile="mvt_BUGS.txt", data=datalist, inits=initlist, numChains = 1, 
+                    parametersToSave=parametersToSave,
+                    nBurnin = nburn, nIter = nmcmc, nThin = nthin, coda = TRUE,
+                    DIC = FALSE, working.directory = NULL, digits = 5, seed=seed)
+    unlink("mvt_BUGS.txt")
+
+    Mu <-  do.call(cbind, lapply(1:d, function(i) bugsfit[,paste0("Mu[", i, "]")][[1]]))
+    Sigma <- array(0, dim=c(d, d, dim(bugsfit[[1]])[1]))
+    for(i in 1:d){
+      for(j in 1:d){        
+        Sigma[i,j,] <- bugsfit[,paste0("Sigma[", i, ",", j, "]")][[1]]
+      }
+    }	  
+    v <- bugsfit[,'nu'][[1]]
+    
+    list(Mu.save=Mu, Sigma.save=Sigma, v.save=v)
 
 }
