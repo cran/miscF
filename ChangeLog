@@ -1,3 +1,6 @@
+2020-4
+  * DESCRIPTION: Change email address and version 0.1-5.
+
 2018-2
 	* R/rmvsn and R/rmvst: wrote my own function to generate samples from a truncated normal distribution to  
 	replace the one from BayesBridge.
